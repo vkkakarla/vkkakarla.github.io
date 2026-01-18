@@ -1,27 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Terminal</title>
-    <link>https://vkkakarla.github.io/</link>
-    <description>Recent content on Terminal</description>
+    <title>AuthBypass on Terminal</title>
+    <link>https://vkkakarla.github.io/tags/authbypass/</link>
+    <description>Recent content in AuthBypass on Terminal</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>© Venkata Karthik Kakarla</copyright>
-    <lastBuildDate>Sun, 18 Jan 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://vkkakarla.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 18 Jan 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://vkkakarla.github.io/tags/authbypass/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CVE-2018-10933: libSSH Authentication Bypass Vulnerability Writeup</title>
       <link>https://vkkakarla.github.io/posts/cve-2018-10933---libssh-auth-bypass/</link>
       <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
       <guid>https://vkkakarla.github.io/posts/cve-2018-10933---libssh-auth-bypass/</guid>
       <description>&lt;table&gt;&#xA;  &lt;thead&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;th&gt;Severity&lt;/th&gt;&#xA;          &lt;th&gt;Critical&lt;/th&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/thead&gt;&#xA;  &lt;tbody&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;CVE&lt;/td&gt;&#xA;          &lt;td&gt;&lt;a href=&#34;https://nvd.nist.gov/vuln/detail/cve-2018-10933&#34;&gt;CVE-2018-10933&lt;/a&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;CVSS v3.1 score&lt;/td&gt;&#xA;          &lt;td&gt;9.1&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;CVSS v3.1 vector&lt;/td&gt;&#xA;          &lt;td&gt;CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;CWE&lt;/td&gt;&#xA;          &lt;td&gt;&lt;a href=&#34;https://cwe.mitre.org/data/definitions/302.html&#34;&gt;CWE-302: Authentication Bypass by Assumed-Immutable Data&lt;/a&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;Resources&lt;/td&gt;&#xA;          &lt;td&gt;&lt;a href=&#34;https://pentesterlab.com/exercises/cve-2018-10933&#34;&gt;PentesterLab&lt;/a&gt;, &lt;a href=&#34;https://git.libssh.org/projects/libssh.git/refs/tags&#34;&gt;libSSH server &lt;code&gt;v0.7.6&lt;/code&gt; to &lt;code&gt;v0.8.4&lt;/code&gt;&lt;/a&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/tbody&gt;&#xA;&lt;/table&gt;&#xA;&lt;h2 id=&#34;cve-description&#34;&gt;CVE Description&lt;/h2&gt;&#xA;&lt;p&gt;A vulnerability was found in &lt;code&gt;libssh&lt;/code&gt;&amp;rsquo;s server-side state machine before versions &lt;code&gt;0.7.6&lt;/code&gt; and &lt;code&gt;0.8.4&lt;/code&gt;. A malicious client could create channels without first performing authentication, resulting in unauthorised access.&lt;/p&gt;&#xA;&lt;h2 id=&#34;setting-up-vulnerable-machine&#34;&gt;Setting up Vulnerable machine&lt;/h2&gt;&#xA;&lt;p&gt;A virtual machine was setup using the &lt;a href=&#34;https://pentesterlab.com/exercises/cve-2018-10933&#34;&gt;PentesterLab&amp;rsquo;s resources&lt;/a&gt;. This machine was assigned the class C IP address of &lt;code&gt;192.168.20.102&lt;/code&gt;.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>&gt;_ whoami</title>
-      <link>https://vkkakarla.github.io/whoami/</link>
-      <pubDate>Sun, 18 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>https://vkkakarla.github.io/whoami/</guid>
-      <description>&lt;figure&gt;&lt;img src=&#34;https://media.licdn.com/dms/image/v2/D5603AQFEycgSQ1Ukpg/profile-displayphoto-scale_400_400/B56ZftB39tGoAk-/0/1752028383423?e=1770249600&amp;amp;v=beta&amp;amp;t=VGb0h_wZijMG6K_nXrxCHNPVdyC6m2AOOphI9X8Gy2Y&#34;&#xA;    alt=&#34;Venkata Karthik Kakarla&#34;&gt;&lt;figcaption&gt;&#xA;      &lt;p&gt;vkkakarla&lt;/p&gt;&#xA;    &lt;/figcaption&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;&lt;p&gt;01010110 01100101 01101110 01101011 01100001 01110100 01100001&lt;br&gt;&#xA;01001011 01100001 01110010 01110100 01101000 01101001 01101011&lt;br&gt;&#xA;01001011 01100001 01101011 01100001 01110010 01101100 01100001&lt;/p&gt;&#xA;&lt;p&gt;I’m a full-time &lt;strong&gt;Penetration Tester&lt;/strong&gt; dedicated to the art of breaking things to make them stronger. My journey into cybersecurity wasn&amp;rsquo;t just about getting a job; it was driven by a fundamental curiosity about how systems work and more importantly, how their intended controls fail when pushed beyond their limits.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

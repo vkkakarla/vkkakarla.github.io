@@ -2,12 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://vkkakarla.github.io/posts/cve-2018-10933---libssh-auth-bypass/</loc>
+    <lastmod>2016-01-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://vkkakarla.github.io/whoami/</loc>
-  </url><url>
-    <loc>https://vkkakarla.github.io/categories/</loc>
-  </url><url>
-    <loc>https://vkkakarla.github.io/tags/</loc>
+    <lastmod>2026-01-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://vkkakarla.github.io/</loc>
+    <lastmod>2026-01-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://vkkakarla.github.io/tags/authbypass/</loc>
+    <lastmod>2016-01-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://vkkakarla.github.io/tags/cve-2018-10933/</loc>
+    <lastmod>2016-01-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://vkkakarla.github.io/tags/linux/</loc>
+    <lastmod>2016-01-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://vkkakarla.github.io/tags/pentesterlab/</loc>
+    <lastmod>2016-01-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://vkkakarla.github.io/posts/</loc>
+    <lastmod>2016-01-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://vkkakarla.github.io/tags/</loc>
+    <lastmod>2016-01-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://vkkakarla.github.io/categories/</loc>
   </url>
 </urlset>

@@ -178,6 +178,8 @@
   },
   "active": "8a1884a995a370a6",
   "lastOpenFiles": [
+    "posts/ligolo-ng/index.html",
+    "posts/ligolo-ng",
     "_jsconfig/package.hugo.json",
     "_jsconfig",
     "posts/showcase/index.html",
@@ -188,8 +190,6 @@
     "img/construction.jpg",
     "img",
     "css/main.min.711aaa368ff78fc46dfd353d5c9a11f2a1f25b42f8fb52e80b9f5bdcd42f8077.css",
-    "posts/_template/index.html",
-    "posts/_template",
-    "posts/coming_soon-1/index.html"
+    "posts/_template/index.html"
   ]
 }

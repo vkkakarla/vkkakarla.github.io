@@ -7,14 +7,13 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>© Venkata Karthik Kakarla</copyright>
-    <lastBuildDate>Sun, 18 Jan 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://vkkakarla.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Coming Soon</title>
-      <link>https://vkkakarla.github.io/posts/coming_soon/</link>
-      <pubDate>Sun, 18 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>https://vkkakarla.github.io/posts/coming_soon/</guid>
-      <description>&lt;h1 id=&#34;-under-construction&#34;&gt;🚀 Under Construction&lt;/h1&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://vkkakarla.github.io/img/construction.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;Thank you for visiting! I&amp;rsquo;m currently rebuilding our website from the ground up to bring you a better experience.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Stay tuned!&lt;/strong&gt; We’ll be live shortly.&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;p&gt;&lt;a href=&#34;mailto:hello@x6b.me&#34;&gt;Contact Support&lt;/a&gt;&lt;/p&gt;</description>
+      <title>&gt;_ whoami</title>
+      <link>https://vkkakarla.github.io/whoami/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://vkkakarla.github.io/whoami/</guid>
+      <description>&lt;figure&gt;&lt;img src=&#34;https://media.licdn.com/dms/image/v2/D5603AQFEycgSQ1Ukpg/profile-displayphoto-scale_400_400/B56ZftB39tGoAk-/0/1752028383423?e=1770249600&amp;amp;v=beta&amp;amp;t=VGb0h_wZijMG6K_nXrxCHNPVdyC6m2AOOphI9X8Gy2Y&#34;&#xA;    alt=&#34;Venkata Karthik Kakarla&#34;&gt;&lt;figcaption&gt;&#xA;      &lt;p&gt;Venkata Karthik Kakarla&lt;/p&gt;&#xA;    &lt;/figcaption&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;&lt;p&gt;I’m a full-time &lt;strong&gt;Penetration Tester&lt;/strong&gt; dedicated to the art of breaking things to make them stronger. My journey into cybersecurity wasn&amp;rsquo;t just about getting a job; it was driven by a fundamental curiosity about how systems work and more importantly, how their intended controls fail when pushed beyond their limits.&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;professional-credentials&#34;&gt;Professional Credentials&lt;/h2&gt;&#xA;&lt;p&gt;I believe in continuous validation of skill. My methodology is backed by industry-standard certifications that emphasise hands-on capability:&#xA;&lt;img src=&#34;https://vkkakarla.github.io/img/oscp-badge.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

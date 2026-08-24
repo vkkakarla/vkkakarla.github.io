@@ -6,4 +6,7 @@
       <url>
         <loc>https://x6b.me/vulns/RCE-on-MCPJam-%3C=-v1.4.2/</loc>
       </url>
+      <url>
+        <loc>https://x6b.me/vulns/Stored-XSS-in-ProjectSend-Footer-Content/</loc>
+      </url>
 </urlset>

